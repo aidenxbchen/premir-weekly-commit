@@ -1,6 +1,7 @@
 import { config } from "../config.js";
+import { cacheAvatar, getCachedAvatarUrl } from "./avatarCache.js";
 import { searchAll, type Fields } from "./bitable.js";
-import { replaceAvatars, replaceCollection, type StoredRecord } from "./store.js";
+import { getRoster, replaceAvatars, replaceCollection, type StoredRecord } from "./store.js";
 
 type UserFieldEntry = { id?: string; avatar_url?: string };
 
@@ -44,7 +45,23 @@ export async function syncAll(): Promise<void> {
   replaceCollection("commitments", commitments);
   commitments.forEach((r) => addAvatar(extractAvatar(r.fields, "姓名")));
 
-  replaceAvatars(avatarMap);
+  // Roster entries carry their own avatarUrl when added directly via 组织
+  // 架构管理 (pulled from the live Feishu directory at add-time) — merge
+  // those in too, so someone who hasn't shown up in any Bitable record yet
+  // still gets an avatar cached.
+  for (const [openId, entry] of Object.entries(getRoster())) {
+    if (entry.avatarUrl) addAvatar([openId, entry.avatarUrl]);
+  }
+
+  // Download anything not already cached (a no-op for everyone already on
+  // disk — see avatarCache.ts), then prefer the local copy over the live
+  // Feishu URL from here on, so normal usage never re-hits Feishu's CDN.
+  await Promise.allSettled(Object.entries(avatarMap).map(([openId, url]) => cacheAvatar(openId, url)));
+  const localFirst: Record<string, string> = {};
+  for (const [openId, url] of Object.entries(avatarMap)) {
+    localFirst[openId] = getCachedAvatarUrl(openId) ?? url;
+  }
+  replaceAvatars(localFirst);
 }
 
 export function startSyncLoop(): void {

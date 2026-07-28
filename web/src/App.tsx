@@ -1,16 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { api } from "./api";
 import { silentLogin } from "./feishuAuth";
 import { Avatar } from "./components/Avatar";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import DevLogin from "./components/DevLogin";
+import { LoadingScreen } from "./components/LoadingScreen";
 import { WeekPicker } from "./components/WeekPicker";
 import AllMilestones from "./pages/AllMilestones";
 import AllRatings from "./pages/AllRatings";
 import ModuleCommitments from "./pages/ModuleCommitments";
 import OrgManagement from "./pages/OrgManagement";
-import type { Me } from "./types";
+import { rankPeople, type RankedPerson } from "./lib/ranking";
+import { weeksSinceStart } from "./lib/week";
+import type { BitableRecord, Me, RatingFields, RosterItem } from "./types";
+
+// The three real steps behind the loading screen's progress bar — each
+// raises the ceiling useSmoothProgress creeps toward. Login is the bulk of
+// the wait for a fresh session (a full Feishu OAuth round-trip); the data
+// step is what actually builds the podium.
+const CEILING = { auth: 35, data: 90, done: 100 } as const;
+const PHASE_LABEL = { auth: "登录中…", data: "同步飞书数据…", done: "准备就绪" } as const;
+type LoadPhase = keyof typeof CEILING;
+
+// The loading screen (podium + progress bar) always shows for at least
+// this long, even when auth and the podium data both come back instantly
+// — otherwise on a fast connection it just flickers past unseen.
+const MIN_LOADING_MS = 7000;
 
 type Status = "loading" | "need-dev-login" | "error" | "ready";
 
@@ -44,11 +60,52 @@ export default function App() {
   // (which never happens if you're already holding a valid session cookie
   // from an earlier local test).
   const [devMode] = useState(() => !(window.h5sdk && window.tt));
+  const [loadPhase, setLoadPhase] = useState<LoadPhase>("auth");
+  const [topThree, setTopThree] = useState<RankedPerson[] | null>(null);
+  // Reset at the top of every loadMe() call (not just once at mount) so
+  // the 7s minimum always measures from "we're actually logging this
+  // session in" — whether that's the automatic silent-login path or a
+  // manual dev-login click — rather than potentially being already-elapsed
+  // by the time a real load starts.
+  const loadStartRef = useRef(0);
 
   async function loadMe() {
+    loadStartRef.current = Date.now();
     const data = await api.get<Me>("/me");
     setMe(data);
     setWeek((w) => w || data.week);
+    setStatus("loading");
+    setLoadPhase("data");
+
+    // The podium is cosmetic — this whole block is best-effort. If it fails
+    // for any reason, the loading screen just skips straight to the real
+    // app instead of getting stuck on it.
+    try {
+      const historyWeeks = weeksSinceStart(data.week);
+      const [rosterRes, ...perWeek] = await Promise.all([
+        api.get<{ items: RosterItem[] }>("/roster"),
+        ...historyWeeks.map((w) => api.get<{ items: BitableRecord<RatingFields>[] }>(`/ratings?week=${w}`)),
+      ]);
+      const byWeek = new Map<string, Map<string, BitableRecord<RatingFields>>>();
+      historyWeeks.forEach((w, i) => {
+        const byPerson = new Map<string, BitableRecord<RatingFields>>();
+        perWeek[i].items.forEach((rec) => {
+          const id = rec.fields["成员姓名"]?.[0]?.id;
+          if (id) byPerson.set(id, rec);
+        });
+        byWeek.set(w, byPerson);
+      });
+      setTopThree(rankPeople(rosterRes.items, byWeek, historyWeeks).slice(0, 3));
+    } catch {
+      // ignore — see comment above
+    }
+
+    setLoadPhase("done");
+    // Forced floor on the total time this screen is shown — if auth and
+    // the podium fetch both came back fast, this is most of the wait; if
+    // they were slow, this adds little to nothing on top of them.
+    const elapsed = Date.now() - loadStartRef.current;
+    await new Promise((r) => setTimeout(r, Math.max(0, MIN_LOADING_MS - elapsed)));
     setStatus("ready");
   }
 
@@ -91,13 +148,17 @@ export default function App() {
     await api.post("/auth/logout");
     setMe(null);
     setWeek("");
+    setLoadPhase("auth");
+    setTopThree(null);
     setStatus("need-dev-login");
   }
 
-  if (status === "loading") return <Centered>加载中…</Centered>;
+  if (status === "loading") {
+    return <LoadingScreen ceiling={CEILING[loadPhase]} label={PHASE_LABEL[loadPhase]} topThree={topThree} />;
+  }
   if (status === "error") return <Centered>登录失败：{error}</Centered>;
   if (status === "need-dev-login") return <DevLogin onLoggedIn={loadMe} />;
-  if (!me || !week) return <Centered>加载中…</Centered>;
+  if (!me || !week) return <LoadingScreen ceiling={CEILING.done} label={PHASE_LABEL.done} topThree={topThree} />;
 
   const navItems = me.role === "admin" ? [...NAV_ITEMS, ORG_NAV_ITEM] : NAV_ITEMS;
   const pageLabel = navItems.find((n) => n.key === page)?.label ?? "";

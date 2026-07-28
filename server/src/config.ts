@@ -33,6 +33,27 @@ export const config = {
   // so individual-commitment read/write is disabled for it until that's
   // reconciled — see README. Module milestones are unaffected.
   commitmentsSupportedModules: ["洗净模块", "烘干模块", "熨烫模块", "净水模块"],
+  // Nightly one-way backup destination — a separate Bitable built purely
+  // as a snapshot target (see README), never read by the live app. The
+  // local store (already the read side of a write-through cache against
+  // the real production base) is the source of truth here; every night
+  // the backup job wipes these tables and rewrites them to match the
+  // local store exactly. Not bidirectional — nothing ever flows back from
+  // this base into the app.
+  backup: {
+    appToken: "FwnZbdY6faFocqs9HBacuYNinWc",
+    tables: {
+      milestones: "tblS4cJ69sPRUcZZ",
+      ratings: "tblTIxX3Id6V5dv7",
+      commitmentsByModule: {
+        洗净模块: "tblOBjYh91OKCiCS",
+        烘干模块: "tblK7fBS4RcAbLMz",
+        熨烫模块: "tblNd1wTxpBrMfzo",
+        净水模块: "tblbSuBmY2SLPYuo",
+        软件组: "tblU3Ps43AwQhH1C",
+      } as Record<string, string>,
+    },
+  },
 };
 
 export type ModuleName = keyof typeof config.tables.commitmentsByModule;

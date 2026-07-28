@@ -4,13 +4,8 @@ import { Avatar } from "../components/Avatar";
 import { Card } from "../components/Card";
 import { RankCrown } from "../components/RankCrown";
 import { WeekMedal } from "../components/WeekMedal";
-import {
-  comparePeopleForRanking,
-  finalGrade,
-  personRankScore,
-  trailingConsecutiveC,
-  type HistoryEntry,
-} from "../lib/gradeScore";
+import { trailingConsecutiveC, type HistoryEntry } from "../lib/gradeScore";
+import { rankPeople } from "../lib/ranking";
 import { weeksSinceStart } from "../lib/week";
 import type { BitableRecord, Me, RatingFields, RosterItem } from "../types";
 
@@ -46,7 +41,7 @@ export default function AllRatings({ me }: { me: Me }) {
       });
       map.set(w, byPerson);
     });
-    setRoster(r.items.filter((i) => i.module));
+    setRoster(r.items);
     setByWeek(map);
     setLoading(false);
   }
@@ -58,16 +53,7 @@ export default function AllRatings({ me }: { me: Me }) {
 
   if (loading) return <div className="text-brand-muted text-sm">加载中…</div>;
 
-  const people = roster
-    .map((person) => {
-      const history: HistoryEntry[] = historyWeeks.map((w) => {
-        const f = byWeek.get(w)?.get(person.openId)?.fields;
-        return { week: w, grade: finalGrade(f?.["周一评级"], f?.["周五评级"]) };
-      });
-      const score = personRankScore(history.map((h) => h.grade));
-      return { person, history, avatarUrl: person.avatarUrl, score };
-    })
-    .sort(comparePeopleForRanking);
+  const people = rankPeople(roster, byWeek, historyWeeks);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">

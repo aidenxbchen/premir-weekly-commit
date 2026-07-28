@@ -3,8 +3,11 @@ import { fileURLToPath } from "node:url";
 import cookieParser from "cookie-parser";
 import express, { type ErrorRequestHandler } from "express";
 import { config } from "./config.js";
+import { AVATAR_DIR } from "./lib/avatarCache.js";
+import { startNightlyBackupSchedule } from "./lib/nightlyBackup.js";
 import { startSyncLoop } from "./lib/sync.js";
 import { authRouter } from "./routes/auth.js";
+import { backupRouter } from "./routes/backup.js";
 import { commitmentsRouter } from "./routes/commitments.js";
 import { gradeRouter } from "./routes/grade.js";
 import { jsapiRouter } from "./routes/jsapi.js";
@@ -31,6 +34,12 @@ app.use("/api/ratings", ratingsRouter);
 app.use("/api/roster", rosterRouter);
 app.use("/api/org", orgRouter);
 app.use("/api/week", weekRouter);
+app.use("/api/backup", backupRouter);
+
+// Locally-cached avatar images (see lib/avatarCache.ts) — served straight
+// from disk so the browser never has to hit Feishu's CDN for a person
+// whose avatar has already been downloaded once.
+app.use("/avatars", express.static(AVATAR_DIR));
 
 // Serve the built frontend (npm run build outputs it to ../web/dist).
 const webDist = path.join(__dirname, "../../web/dist");
@@ -58,6 +67,7 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
 app.use(errorHandler);
 
 startSyncLoop();
+startNightlyBackupSchedule();
 
 app.listen(config.port, () => {
   console.log(`premir-weekly-commit server listening on :${config.port}`);

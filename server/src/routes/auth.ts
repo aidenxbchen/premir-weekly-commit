@@ -65,7 +65,10 @@ authRouter.post("/login", wrap(async (req, res) => {
   issueSession(res, {
     openId,
     name: entry.name,
-    avatarUrl: infoRes.data?.avatar_url,
+    // Prefer the locally-cached copy (see lib/avatarCache.ts) over the
+    // live Feishu URL, same as dev-login above — falls back to the live
+    // URL for a brand new person the sync loop hasn't cached yet.
+    avatarUrl: getAvatars()[openId] ?? infoRes.data?.avatar_url,
     role: entry.role,
     module: entry.module,
   });

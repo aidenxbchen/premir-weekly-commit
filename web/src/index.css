@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Self-hosted, subsetted from the CEO's own font file (字制区喜脉喜欢体) down
+   to just the 5 characters the loading screen needs ("算你厉害！"), which
+   keeps it at ~4.5KB instead of shipping the full ~9MB face. Self-hosted
+   rather than any CDN for the same reason as everywhere else in this app —
+   this needs to work from mainland China without a proxy. */
+@font-face {
+  font-family: "XiZhiQu Ximai";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/xizhiqu-subset.woff2") format("woff2");
+  unicode-range: U+4f60, U+5389, U+5bb3, U+7b97, U+ff01;
+}
+
 body {
   @apply bg-brand-bg text-brand-text;
 }
