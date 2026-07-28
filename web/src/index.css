@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-brand-bg text-brand-text;
+}
+
+@layer components {
+  /* Small uppercase mono label, e.g. section eyebrows — matches the
+     "01 / RESULT" style label convention from the PREMIR review template. */
+  .eyebrow {
+    @apply font-mono text-[10px] tracking-[2px] uppercase text-brand-label;
+  }
+}
