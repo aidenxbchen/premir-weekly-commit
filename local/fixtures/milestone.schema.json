@@ -1,0 +1,140 @@
+{
+  "columns": [
+    {
+      "data_type": "uuid",
+      "default_value": "gen_random_uuid()",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "id"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "week"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "module"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "description"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "b_criteria"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "b_plus_criteria"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "b_check"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "b_plus_check"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "lead_profile"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "weekend_grade"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "weekend_note"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "monday_grade"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "monday_note"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_created_at"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "\nCASE\n    WHEN (current_setting('app.user_id'::text, true) = ''::text) THEN NULL",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "_created_by"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_updated_at"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "\nCASE\n    WHEN (current_setting('app.user_id'::text, true) = ''::text) THEN NULL",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "_updated_by"
+    }
+  ],
+  "indexes": [
+    {
+      "columns": [
+        "week",
+        "module"
+      ],
+      "definition": "CREATE UNIQUE INDEX uk_milestone_week_module ON milestone USING btree (week, module)",
+      "type": "unique"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "definition": "",
+      "type": "primary"
+    }
+  ]
+}

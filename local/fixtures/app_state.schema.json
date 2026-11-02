@@ -1,0 +1,55 @@
+{
+  "columns": [
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "key"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "value"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_created_at"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "\nCASE\n    WHEN (current_setting('app.user_id'::text, true) = ''::text) THEN NULL",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "_created_by"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_updated_at"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "\nCASE\n    WHEN (current_setting('app.user_id'::text, true) = ''::text) THEN NULL",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "_updated_by"
+    }
+  ],
+  "indexes": [
+    {
+      "columns": [
+        "key"
+      ],
+      "definition": "",
+      "type": "primary"
+    }
+  ]
+}

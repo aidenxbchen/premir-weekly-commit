@@ -1,0 +1,18 @@
+[
+  {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "member_profile": "(demo-admin)",
+    "module": "软件组",
+    "role": "admin",
+    "name": "演示管理员",
+    "email": "admin@example.com"
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000002",
+    "member_profile": "(demo-member)",
+    "module": "软件组",
+    "role": "member",
+    "name": "演示伙伴",
+    "email": "member@example.com"
+  }
+]

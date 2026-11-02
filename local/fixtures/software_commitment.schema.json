@@ -1,0 +1,195 @@
+{
+  "columns": [
+    {
+      "data_type": "uuid",
+      "default_value": "gen_random_uuid()",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "id"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "week"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "owner_profile"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "deliverable"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "a_criteria"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "b_criteria"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "b_plus_criteria"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "risk"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "start_time"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "end_time"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "grade"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "note"
+    },
+    {
+      "data_type": "bool",
+      "default_value": "false",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "locked"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "checked"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "monday_grade"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "monday_note"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "weekend_grade"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "weekend_note"
+    },
+    {
+      "data_type": "bool",
+      "default_value": "false",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "edit_authorized"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "name"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_created_at"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "\nCASE\n    WHEN (current_setting('app.user_id'::text, true) = ''::text) THEN NULL",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "_created_by"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_updated_at"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "\nCASE\n    WHEN (current_setting('app.user_id'::text, true) = ''::text) THEN NULL",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "_updated_by"
+    }
+  ],
+  "indexes": [
+    {
+      "columns": [
+        "((owner_profile).user_id)"
+      ],
+      "definition": "CREATE INDEX idx_software_commitment_owner ON software_commitment USING btree (((owner_profile).user_id))",
+      "type": "normal"
+    },
+    {
+      "columns": [
+        "week"
+      ],
+      "definition": "CREATE INDEX idx_software_commitment_week ON software_commitment USING btree (week)",
+      "type": "normal"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "definition": "",
+      "type": "primary"
+    }
+  ]
+}

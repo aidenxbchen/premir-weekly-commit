@@ -1,0 +1,34 @@
+{
+  "tables": [
+    {
+      "name": "module_rating"
+    },
+    {
+      "name": "roster_snapshot"
+    },
+    {
+      "name": "rating_email_outbox"
+    },
+    {
+      "name": "software_commitment"
+    },
+    {
+      "name": "roster"
+    },
+    {
+      "name": "rating"
+    },
+    {
+      "name": "milestone"
+    },
+    {
+      "name": "commitment"
+    },
+    {
+      "name": "backup_run"
+    },
+    {
+      "name": "app_state"
+    }
+  ]
+}

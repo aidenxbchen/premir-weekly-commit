@@ -1,0 +1,84 @@
+{
+  "columns": [
+    {
+      "data_type": "uuid",
+      "default_value": "gen_random_uuid()",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "id"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "week"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "module"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "weekend_grade"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "weekend_note"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "monday_grade"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "monday_note"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "now()",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "updated_at"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "now()",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_created_at"
+    }
+  ],
+  "indexes": [
+    {
+      "columns": [
+        "week",
+        "module"
+      ],
+      "definition": "CREATE UNIQUE INDEX uk_module_rating_week_module ON module_rating USING btree (week, module)",
+      "type": "unique"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "definition": "",
+      "type": "primary"
+    }
+  ]
+}

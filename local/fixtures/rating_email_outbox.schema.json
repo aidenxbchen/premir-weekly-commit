@@ -1,0 +1,196 @@
+{
+  "columns": [
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "event_key"
+    },
+    {
+      "data_type": "uuid",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "rating_id"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "rating_which"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "recipient_user_id"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "recipient_email"
+    },
+    {
+      "data_type": "jsonb",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "event_payload"
+    },
+    {
+      "data_type": "jsonb",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "snapshot"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "pending",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "status"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "delivery_status"
+    },
+    {
+      "data_type": "int4",
+      "default_value": "0",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "attempts"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "next_attempt"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "claimed_at"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "claim_token"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "tested_at"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "sent_at"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "failed_at"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "message_id"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "last_error"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "created_at"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "updated_at"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_created_at"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "\nCASE\n    WHEN (current_setting('app.user_id'::text, true) = ''::text) THEN NULL",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "_created_by"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_updated_at"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "\nCASE\n    WHEN (current_setting('app.user_id'::text, true) = ''::text) THEN NULL",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "_updated_by"
+    }
+  ],
+  "indexes": [
+    {
+      "columns": [
+        "next_attempt",
+        "created_at"
+      ],
+      "definition": "CREATE INDEX idx_rating_email_outbox_due ON rating_email_outbox USING btree (next_attempt, created_at) WHERE ((status)::text = ANY (ARRAY[('pending'::character varying)::text, ('failed'::character varying)::text]))",
+      "type": "normal"
+    },
+    {
+      "columns": [
+        "claimed_at"
+      ],
+      "definition": "CREATE INDEX idx_rating_email_outbox_stale_claim ON rating_email_outbox USING btree (claimed_at) WHERE ((status)::text = 'sending'::text)",
+      "type": "normal"
+    },
+    {
+      "columns": [
+        "event_key"
+      ],
+      "definition": "",
+      "type": "primary"
+    }
+  ]
+}

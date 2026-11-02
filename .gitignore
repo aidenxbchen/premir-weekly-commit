@@ -1,8 +1,85 @@
+# Dependencies
 node_modules/
+*/node_modules/
+
+# Production builds
 dist/
+*/dist/
 build/
-.env
+*/build/
+
+# Environment files
 .env.local
-*.log
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+/logs/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
 .DS_Store
-server/data/
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary folders
+tmp/
+temp/
+.playwright-cli/
+
+# Lock files (keep package-lock.json for consistent installs)
+yarn.lock
+pnpm-lock.yaml
+
+# Cache files
+.eslintcache
+*.tsbuildinfo
+
+# swc wasm
+.swc
+
+# Agent files
+.agent/
+.npm_cache
+
+# Private local database copies
+local-data/
+local/public/avatars/
+local/avatars.json
+local/public/sketchbook/
+*.bak
+
+# Private runtime and operator configuration
+.env
+.env.*
+!.env.example
+private/
+.artifacts/
+*.pem
+*.key
+ops/superagent/*.local.*
+
+# Also ignore a developer-only dependency symlink
+node_modules

@@ -1,0 +1,90 @@
+{
+  "columns": [
+    {
+      "data_type": "uuid",
+      "default_value": "gen_random_uuid()",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "id"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "ran_at"
+    },
+    {
+      "data_type": "int4",
+      "default_value": "0",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "milestone_count"
+    },
+    {
+      "data_type": "int4",
+      "default_value": "0",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "commitment_count"
+    },
+    {
+      "data_type": "int4",
+      "default_value": "0",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "rating_count"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "status"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "error_message"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_created_at"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "\nCASE\n    WHEN (current_setting('app.user_id'::text, true) = ''::text) THEN NULL",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "_created_by"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_updated_at"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "\nCASE\n    WHEN (current_setting('app.user_id'::text, true) = ''::text) THEN NULL",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "_updated_by"
+    }
+  ],
+  "indexes": [
+    {
+      "columns": [
+        "id"
+      ],
+      "definition": "",
+      "type": "primary"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "columns": [
+    {
+      "data_type": "uuid",
+      "default_value": "gen_random_uuid()",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "id"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "member_profile"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "module"
+    },
+    {
+      "data_type": "varchar",
+      "default_value": "member",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "role"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": true,
+      "name": "coordinating_modules"
+    },
+    {
+      "data_type": "bool",
+      "default_value": "false",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "is_milestone_writer"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "email"
+    },
+    {
+      "data_type": "text",
+      "default_value": "",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "name"
+    },
+    {
+      "data_type": "bool",
+      "default_value": "true",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "can_grade"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_created_at"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "\nCASE\n    WHEN (current_setting('app.user_id'::text, true) = ''::text) THEN NULL",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "_created_by"
+    },
+    {
+      "data_type": "timestamptz",
+      "default_value": "CURRENT_TIMESTAMP",
+      "is_allow_null": false,
+      "is_array": false,
+      "name": "_updated_at"
+    },
+    {
+      "data_type": "user_profile",
+      "default_value": "\nCASE\n    WHEN (current_setting('app.user_id'::text, true) = ''::text) THEN NULL",
+      "is_allow_null": true,
+      "is_array": false,
+      "name": "_updated_by"
+    }
+  ],
+  "indexes": [
+    {
+      "columns": [
+        "((member_profile).user_id)"
+      ],
+      "definition": "CREATE UNIQUE INDEX uk_roster_member ON roster USING btree (((member_profile).user_id))",
+      "type": "unique"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "definition": "",
+      "type": "primary"
+    }
+  ]
+}
