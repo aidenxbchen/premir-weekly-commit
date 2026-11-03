@@ -119,8 +119,10 @@ export default function AllMilestones() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me.module, milestoneKey]);
 
-  if (loading || !historyLoaded || departmentsLoading) return <div className="text-muted-foreground text-sm">加载中…</div>;
+  // 先展示错误：首次加载失败时没有旧缓存，loading 会一直为 true；如果先判断
+  // loading，用户就只会看到永远转不完的“加载中”，错误块永远到不了。
   if (loadError) return <div className="text-sm text-destructive bg-red-50 border border-red-100 rounded-xl px-4 py-3">加载失败：{loadError} <button className="underline ml-2" onClick={() => { invalidateApiCache('milestones:'); invalidateApiCache('commitments:'); invalidateApiCache('roster:'); invalidateApiCache('module-ratings:'); }}>重新加载</button></div>;
+  if (loading || !historyLoaded || departmentsLoading) return <div className="text-muted-foreground text-sm">加载中…</div>;
 
   function buildSection(mod: ModuleName) {
     const lead: RosterMember | undefined = roster.find((r: RosterMember) => r.module === mod && r.level === 'L3');

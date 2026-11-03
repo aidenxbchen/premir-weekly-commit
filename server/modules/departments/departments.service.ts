@@ -89,6 +89,13 @@ export class DepartmentsService {
 
     const oldName: string = target.name;
     await this.db.update(roster).set({ module: trimmed, updatedAt: new Date() }).where(eq(roster.module, oldName));
+    // L2/L4 的管理半径是独立数组，组别改名时也必须一起改；否则改名后这些
+    // 管理员仍指向旧组名，管理半径会静默失效。
+    await this.db.update(roster).set({
+      managedModules: sql`array_replace(${roster.managedModules}, ${oldName}, ${trimmed})`,
+      coordinatingModules: sql`array_replace(${roster.coordinatingModules}, ${oldName}, ${trimmed})`,
+      updatedAt: new Date(),
+    }).where(sql`${oldName} = ANY(${roster.managedModules}) OR ${oldName} = ANY(${roster.coordinatingModules})`);
     await this.db.update(rosterSnapshot).set({ module: trimmed }).where(eq(rosterSnapshot.module, oldName));
     await this.db.update(milestone).set({ module: trimmed, updatedAt: new Date() }).where(eq(milestone.module, oldName));
     await this.db.update(moduleRating).set({ module: trimmed }).where(eq(moduleRating.module, oldName));
@@ -105,7 +112,9 @@ export class DepartmentsService {
   }
 
   // 组别里还有人就不给删：删掉之后这些人的归属会变成"查无此部门"，
-  // 页面按组别渲染的入口会直接漏掉他们（历史数据倒是还在）。
+  // 页面按组别渲染的入口会直接漏掉他们。
+  // 已经有历史承诺/里程碑/评级时同样不给删：组别一旦从 department 表消失，
+  // 这些历史记录就再也没有页面入口，等于在界面上丢失；需要调整时改名即可。
   async remove(id: string): Promise<void> {
     const rows: DepartmentRow[] = await this.db.select().from(department).where(eq(department.id, id)).limit(1);
     const target: DepartmentRow | undefined = rows[0];
@@ -115,6 +124,14 @@ export class DepartmentsService {
       .from(roster)
       .where(eq(roster.module, target.name));
     if (Number(members[0]?.n ?? 0) > 0) throw new ConflictException('department_not_empty');
+    const history: Array<{ n: number }> = await Promise.all([
+      this.db.select({ n: count() }).from(commitment).where(eq(commitment.module, target.name)),
+      this.db.select({ n: count() }).from(milestone).where(eq(milestone.module, target.name)),
+      this.db.select({ n: count() }).from(rating).where(eq(rating.module, target.name)),
+      this.db.select({ n: count() }).from(moduleRating).where(eq(moduleRating.module, target.name)),
+      this.db.select({ n: count() }).from(ratingChangeLog).where(eq(ratingChangeLog.module, target.name)),
+    ]).then((results: Array<Array<{ n: number }>>) => results.flat());
+    if (history.some((row: { n: number }) => Number(row.n) > 0)) throw new ConflictException('department_has_history');
     await this.db.delete(department).where(eq(department.id, id));
   }
 }

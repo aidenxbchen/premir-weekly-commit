@@ -218,7 +218,7 @@ export default function OrgManagement() {
       <ConfirmDialog
         open={!!removingDept}
         title="删除这个组别？"
-        message={`确认删除组别「${removingDept?.name ?? ''}」吗？只有组别里没有成员时才能删除；删除后该组别会从组织架构、周里程碑入口里消失（历史记录仍保留）。${deptError ? `\n\n上次操作失败：${deptError}` : ''}`}
+        message={`确认删除组别「${removingDept?.name ?? ''}」吗？只有组别里没有成员、也没有历史承诺/里程碑/评级时才能删除；删除后该组别会从组织架构、周里程碑入口里消失。${deptError ? `\n\n上次操作失败：${deptError}` : ''}`}
         confirmLabel="确认删除"
         busy={deptBusy}
         onConfirm={confirmRemoveDept}
