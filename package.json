@@ -36,7 +36,8 @@
     "precommit": "node scripts/hooks/run-precommit.js",
     "postinstall": "npx -y @lark-apaas/fullstack-cli@latest action-plugin init",
     "dev:local": "node ./scripts/dev-local.js",
-    "local:start": "node local/start.mjs"
+    "local:start": "node local/start.mjs",
+    "test:departments": "TS_NODE_PROJECT=local/tsconfig.json ts-node --transpile-only -r tsconfig-paths/register scripts/regression-departments.ts"
   },
   "dependencies": {
     "@lark-apaas/fullstack-nestjs-core": "^1.1.22",
@@ -108,8 +109,8 @@
     "@tiptap/extension-code-block": "^3.15.3",
     "@tiptap/extension-code-block-lowlight": "^3.14.0",
     "@tiptap/extension-color": "^3.14.0",
-    "@tiptap/extension-highlight": "^3.14.0",
-    "@tiptap/extension-image": "^3.14.0",
+    "@tiptap/extension-highlight": "3.29.2",
+    "@tiptap/extension-image": "3.29.2",
     "@tiptap/extension-link": "^3.14.0",
     "@tiptap/extension-placeholder": "^3.14.0",
     "@tiptap/extension-task-item": "^3.15.3",

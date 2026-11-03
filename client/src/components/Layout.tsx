@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useCurrentUserProfile } from '@lark-apaas/client-toolkit/hooks/useCurrentUserProfile';
 import { Flag, LayoutDashboard, Network, Plus, ShieldCheck, UserRound } from 'lucide-react';
@@ -69,6 +69,18 @@ const Layout = () => {
     return preserveForHotReload || new URLSearchParams(window.location.search).has('comment');
   });
 
+  // 当前周有没有内容会随页面上的写入而变化：新建承诺、B+、里程碑或评级后，
+  // 必须重新取一次，否则“开启新一周”会继续显示“EMPTY WEEK / 跳过”，
+  // 确认框也会误称当前周没有任何内容。路由切换和点开确认框前都刷新一次。
+  const refreshActiveWeeks = useCallback(async (): Promise<void> => {
+    try {
+      const { weeks } = await weekApi.listActiveWeeks();
+      setActiveWeeks(weeks);
+    } catch {
+      // 拿不到就保留上一次的值，下一次导航或操作时再试，不要挡住页面。
+    }
+  }, []);
+
   async function reloadMe(): Promise<void> {
     const [data, activity] = await Promise.all([meApi.getMe(), weekApi.listActiveWeeks()]);
     setMe(data);
@@ -85,6 +97,10 @@ const Layout = () => {
   }, []);
 
   useEffect(() => {
+    void refreshActiveWeeks();
+  }, [location.pathname, refreshActiveWeeks]);
+
+  useEffect(() => {
     // 评论通知仍可直达个人中心并自动展开讨论。
     if (notificationEntry && notificationEntry.pathname !== '/') {
       navigate({ pathname: '/', search: notificationEntry.search }, { replace: true });
@@ -97,6 +113,13 @@ const Layout = () => {
     setEntered(true);
   }
 
+  async function openNewWeekDialog(): Promise<void> {
+    setAdvanceError('');
+    // 先刷新再弹确认框：确认框里“当前周是否为空”的文案必须和实际内容一致。
+    await refreshActiveWeeks();
+    setConfirmingNewWeek(true);
+  }
+
   async function confirmAdvanceWeek(): Promise<void> {
     setAdvancingWeek(true);
     setAdvanceError('');
@@ -104,8 +127,7 @@ const Layout = () => {
       const { week: newWeek } = await weekApi.advanceWeek(week);
       setMe((prev) => (prev ? { ...prev, week: newWeek } : prev));
       setWeek(newWeek);
-      const activity = await weekApi.listActiveWeeks();
-      setActiveWeeks(activity.weeks);
+      await refreshActiveWeeks();
       setConfirmingNewWeek(false);
     } catch (e) {
       setAdvanceError(errorMessage(e));
@@ -155,10 +177,7 @@ const Layout = () => {
               <button
                 className="new-week-button"
                 type="button"
-                onClick={() => {
-                  setAdvanceError('');
-                  setConfirmingNewWeek(true);
-                }}
+                onClick={() => { void openNewWeekDialog(); }}
               >
                 <span><Plus aria-hidden="true" /></span>
                 <span className="new-week-copy"><small>{currentWeekHasActivity ? 'NEXT CYCLE' : 'EMPTY WEEK'}</small><strong>{currentWeekHasActivity ? '开启新一周' : '跳过并开启下一周'}</strong></span>
